@@ -21,7 +21,7 @@ import java.util.ArrayList;
 /**
  * Servlet implementation class HomeServlet
  */
-@WebServlet("/home1")
+@WebServlet("/home")
 public class HomeServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -41,8 +41,6 @@ public class HomeServlet extends HttpServlet {
 	
 		// create connect to mysql server
 		ArrayList<Student> studentList = new ArrayList<Student>();
-		
-//		String names = "";
 		try {
 			String requestParameter = request.getParameter("class");
 			
@@ -66,21 +64,10 @@ public class HomeServlet extends HttpServlet {
 			ResultSet resultSet = statement.executeQuery(SqlQuery);
 
 			while(resultSet.next()){
-				Student student = new Student(resultSet.getInt("id"),resultSet.getString("name"),resultSet.getString("class_name"));
+				Student student = Student.builder().id(resultSet.getInt("id")).name(resultSet.getString("name")).className(resultSet.getString("class_name")).build();
 				studentList.add(student);
 			}
 			
-	        request.setAttribute("studentList", studentList);
-
-	        // Get the RequestDispatcher for the target JSP
-	        RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/student-list.jsp");
-
-	        // Forward the request to the JSP
-	        dispatcher.forward(request, response);
-		
-//			if (names == "") {
-//				names = "there is no student";
-//			}
 		} catch (SQLException e) {
 			System.err.println("Error connecting to the database: " + e.getMessage());
 		} catch (ClassNotFoundException e) {
@@ -91,6 +78,14 @@ public class HomeServlet extends HttpServlet {
 			// to connect JSP file.
 
 		}
+		
+        request.setAttribute("studentList", studentList);
+
+        // Get the RequestDispatcher for the target JSP
+        RequestDispatcher dispatcher = request.getRequestDispatcher("WEB-INF/home.jsp");
+
+        // Forward the request to the JSP
+        dispatcher.forward(request, response);
         
 //		response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
